@@ -49,6 +49,7 @@ app.get("/api/comments", function(request, response) {
 app.post("/api/new-comment", function(request, response) {
   var first_name = request.body.first_name;
   var comment = request.body.comment;
+  var id = request.body.id;
 
   //bundle into reusable helper function?
   pool.connect((err, db, done) => {
@@ -56,14 +57,13 @@ app.post("/api/new-comment", function(request, response) {
       return response.status(400).send(err);
     } else {
       db.query(
-        "INSERT INTO comments (first_name, comment) VALUES($1, $2)",
-        [first_name, comment],
+        "INSERT INTO comments (first_name, comment, id) VALUES($1, $2, $3)",
+        [first_name, comment, id],
         (err, table) => {
           if (err) {
             return response.status(400).send(err);
           } else {
             console.log("DATA INSERTED");
-            db.end();
             response.status(201).send({ message: "Data inserted" });
           }
         }
