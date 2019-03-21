@@ -29,6 +29,23 @@ app.use(function(request, response, next) {
   next();
 });
 
+app.get("/api/comments", function(request, response) {
+  pool.connect(function(err, db, done) {
+    if (err) {
+      return response.status(400).send(err);
+    } else {
+      db.query("SELECT * FROM comments", function(err, table) {
+        done();
+        if (err) {
+          return response.status(400).send(err);
+        } else {
+          return response.status(200).send(table.rows);
+        }
+      });
+    }
+  });
+});
+
 app.post("/api/new-comment", function(request, response) {
   var first_name = request.body.first_name;
   var comment = request.body.comment;
@@ -36,17 +53,18 @@ app.post("/api/new-comment", function(request, response) {
   //bundle into reusable helper function?
   pool.connect((err, db, done) => {
     if (err) {
-      return console.log(err);
+      return response.status(400).send(err);
     } else {
       db.query(
         "INSERT INTO comments (first_name, comment) VALUES($1, $2)",
         [first_name, comment],
         (err, table) => {
           if (err) {
-            return console.log(err);
+            return response.status(400).send(err);
           } else {
             console.log("DATA INSERTED");
             db.end();
+            response.status(201).send({ message: "Data inserted" });
           }
         }
       );
