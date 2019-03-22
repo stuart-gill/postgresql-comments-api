@@ -1,3 +1,8 @@
+## Please note:
+
+This server application is written to communicate with a React front end, which you can download here:
+[https://github.com/stuart-gill/react-comments](https://github.com/stuart-gill/react-comments)
+
 ## Available Scripts
 
 Install nodemon:
