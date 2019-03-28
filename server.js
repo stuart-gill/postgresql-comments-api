@@ -38,6 +38,7 @@ app.delete("/api/remove/:id", function(request, response) {
       return response.status(400).send(err);
     } else {
       db.query("DELETE FROM comments WHERE id = $1", [id], (err, result) => {
+        done();
         if (err) {
           return response.status(400).send(err);
         } else {
