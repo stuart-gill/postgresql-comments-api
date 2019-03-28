@@ -3,6 +3,7 @@ let { json, urlencoded } = require("body-parser");
 let morgan = require("morgan");
 const PORT = 3000;
 let pg = require("pg");
+let cors = require("cors");
 
 let pool = new pg.Pool({
   port: 5432,
@@ -14,6 +15,7 @@ let pool = new pg.Pool({
 });
 
 let app = express();
+app.use(cors());
 
 app.use(json());
 app.use(urlencoded({ extended: true }));
@@ -27,6 +29,25 @@ app.use(function(request, response, next) {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   next();
+});
+
+app.delete("/api/remove/:id", function(request, response) {
+  var id = request.params.id;
+  pool.connect(function(err, db, done) {
+    if (err) {
+      return response.status(400).send(err);
+    } else {
+      db.query("DELETE FROM comments WHERE id = $1", [id], (err, result) => {
+        if (err) {
+          return response.status(400).send(err);
+        } else {
+          return response
+            .status(200)
+            .send({ message: "successfully deleted record" });
+        }
+      });
+    }
+  });
 });
 
 app.get("/api/comments", function(request, response) {
